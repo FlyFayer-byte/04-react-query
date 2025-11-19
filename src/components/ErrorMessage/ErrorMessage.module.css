@@ -10,3 +10,9 @@
   background-color: #fdecea;
   border-color: #f5c2c0;
 }
+.error {
+  color: red;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}

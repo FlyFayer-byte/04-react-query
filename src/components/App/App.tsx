@@ -1,65 +1,105 @@
-import { useMemo, useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import ReactPaginate from 'react-paginate';
+
 import SearchBar from '../SearchBar/SearchBar';
 import MovieGrid from '../MovieGrid/MovieGrid';
 import Loader from '../Loader/Loader';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import MovieModal from '../MovieModal/MovieModal';
-import type { Movie } from '../../types/movie';
+
+import type { Movie, MovieSearchResponse } from '../../types/movie';
 import { fetchMovies } from '../../services/movieService';
+
 import toast, { Toaster } from 'react-hot-toast';
 import styles from './App.module.css';
 
 export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Movie | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  const canShowGrid = useMemo(
-    () => !loading && !error && movies.length > 0,
-    [loading, error, movies]
-  );
+  const toastShownRef = useRef({
+    noResults: false,
+    error: false,
+  });
 
-  const onSubmit = async (query: string) => {
-    abortRef.current?.abort();
-    abortRef.current = new AbortController();
+  const { data, isLoading, isError } = useQuery<MovieSearchResponse>({
+    queryKey: ['movies', search, page],
+    queryFn: () => fetchMovies({ query: search, page }),
+    enabled: search.length > 0,
+    retry: 0,
+  });
 
-    setMovies([]);
-    setError(null);
-    setLoading(true);
+  const movies = data?.results ?? [];
+  const totalPages = data?.total_pages ?? 0;
 
-    try {
-      const data = await fetchMovies({
-        query,
-        page: 1,
-        signal: abortRef.current.signal,
-      });
-      if (!data.results.length) {
-        toast.error('No movies found for your request.');
-      }
-      setMovies(data.results);
-    } catch (e: unknown) {
-  if (e instanceof Error && e.name !== 'CanceledError' && e.message !== 'canceled') {
-    console.error(e);
-    setError('fetch_error');
-  }
-}
- finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!search) return;
+
+    if (isError && !toastShownRef.current.error) {
+      toast.error('Something went wrong while fetching movies.');
+      toastShownRef.current.error = true;
+      return;
     }
-  };
+
+    if (
+      !isLoading &&
+      data &&
+      data.results.length === 0 &&
+      !toastShownRef.current.noResults
+    ) {
+      toast.error('No movies found for your request.');
+      toastShownRef.current.noResults = true;
+    }
+
+    if (data && data.results.length > 0) {
+      toastShownRef.current = { noResults: false, error: false };
+    }
+  }, [isError, isLoading, data, search]);
 
   return (
     <div className={styles.app}>
       <Toaster position="top-center" />
-      <SearchBar onSubmit={onSubmit} />
 
-      {loading && <Loader />}
-      {error && <ErrorMessage />}
-      {canShowGrid && <MovieGrid movies={movies} onSelect={setSelected} />}
+      <SearchBar
+        onSubmit={query => {
+          setSearch(query);
+          setPage(1);
 
-      <MovieModal movie={selected} onClose={() => setSelected(null)} />
+          toastShownRef.current = { noResults: false, error: false };
+        }}
+      />
+
+      {isLoading && <Loader />}
+      {/* {isError && ( */}
+        {/* <ErrorMessage message="Something went wrong while fetching movies" /> */}
+      {/* )} */}
+
+      {movies.length > 0 && (
+        <MovieGrid movies={movies} onSelect={setSelectedMovie} />
+      )}
+
+      {selectedMovie && (
+        <MovieModal
+          movie={selectedMovie}
+          onClose={() => setSelectedMovie(null)}
+        />
+      )}
+
+      {totalPages > 1 && (
+        <ReactPaginate
+          pageCount={totalPages}
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={1}
+          onPageChange={({ selected }) => setPage(selected + 1)}
+          forcePage={page - 1}
+          containerClassName={styles.pagination}
+          activeClassName={styles.active}
+          nextLabel="→"
+          previousLabel="←"
+        />
+      )}
     </div>
   );
 }
