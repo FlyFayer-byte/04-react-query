@@ -1,15 +1,12 @@
 import styles from './ErrorMessage.module.css';
 
-interface ErrorMessageProps {
+// Типізація пропсів: message — не обовʼязковий
+export interface ErrorMessageProps {
   message?: string;
 }
 
 export default function ErrorMessage({
-  message = 'Something went wrong',
+  message = 'Something went wrong!',
 }: ErrorMessageProps) {
-  return (
-    <p role="alert" className={styles.error}>
-      ❌ {message}
-    </p>
-  );
+  return <p className={styles.error}>{message}</p>;
 }

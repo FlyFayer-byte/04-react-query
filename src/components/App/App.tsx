@@ -72,9 +72,7 @@ export default function App() {
       />
 
       {isLoading && <Loader />}
-      {isError && (
-        <ErrorMessage/>
-      )}
+      {isError && <ErrorMessage message="Failed to fetch movies" />}
 
       {movies.length > 0 && (
         <MovieGrid movies={movies} onSelect={setSelectedMovie} />
