@@ -73,7 +73,7 @@ export default function App() {
 
       {isLoading && <Loader />}
       {isError && (
-        <ErrorMessage message="Something went wrong while fetching movies" />
+        <ErrorMessage/>
       )}
 
       {movies.length > 0 && (
