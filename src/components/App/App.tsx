@@ -34,21 +34,39 @@ export default function App() {
   const movies = data?.results ?? [];
   const totalPages = data?.total_pages ?? 0;
 
+  // useEffect(() => {
+  //   if (!search) return;
+
+  //   if (isError && !toastShownRef.current.error) {
+  //     toast.error('Something went wrong while fetching movies.');
+  //     toastShownRef.current.error = true;
+  //     return;
+  //   }
+
+  //   if (
+  //     !isLoading &&
+  //     data &&
+  //     data.results.length === 0 &&
+  //     !toastShownRef.current.noResults
+  //   ) {
+  //     toast.error('No movies found for your request.');
+  //     toastShownRef.current.noResults = true;
+  //   }
+
+  //   if (data && data.results.length > 0) {
+  //     toastShownRef.current = { noResults: false, error: false };
+  //   }
+  // }, [isError, isLoading, data, search]);
   useEffect(() => {
-    if (!search) return;
+    if (!search || isLoading) return;
 
     if (isError && !toastShownRef.current.error) {
       toast.error('Something went wrong while fetching movies.');
       toastShownRef.current.error = true;
-      return;
+      toastShownRef.current.noResults = false;
     }
 
-    if (
-      !isLoading &&
-      data &&
-      data.results.length === 0 &&
-      !toastShownRef.current.noResults
-    ) {
+    if (data && data.results.length === 0 && !toastShownRef.current.noResults) {
       toast.error('No movies found for your request.');
       toastShownRef.current.noResults = true;
     }
