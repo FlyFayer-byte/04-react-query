@@ -10,9 +10,9 @@ export interface Movie {
 }
 
 // Тип відповіді TMDB з пагінацією
-export interface MovieSearchResponse {
-  page: number;
-  results: Movie[];
-  total_pages: number;
-  total_results: number;
-}
+// export interface MovieSearchResponse {
+//   page: number;
+//   results: Movie[];
+//   total_pages: number;
+//   total_results: number;
+// }
