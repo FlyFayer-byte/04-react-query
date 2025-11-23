@@ -12,7 +12,7 @@ export interface MovieModalProps {
 const modalRoot = document.getElementById('modal-root') as HTMLElement | null;
 
 export default function MovieModal({ movie, onClose }: MovieModalProps) {
-  // 🧠 Хук завжди викликається — незалежно від умови
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -28,7 +28,6 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
     };
   }, [onClose]);
 
-  // ⚠️ Перевірка після хуків
   if (!movie || !modalRoot) return null;
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
