@@ -57,24 +57,24 @@ export default function App() {
   //     toastShownRef.current = { noResults: false, error: false };
   //   }
   // }, [isError, isLoading, data, search]);
-  useEffect(() => {
-    if (!search || isLoading) return;
+useEffect(() => {
+  if (!search || isLoading) return;
 
-    if (isError && !toastShownRef.current.error) {
-      toast.error('Something went wrong while fetching movies.');
-      toastShownRef.current.error = true;
-      toastShownRef.current.noResults = false;
-    }
+  if (isError && !toastShownRef.current.error) {
+    toast.error('Something went wrong while fetching movies.');
+    toastShownRef.current.error = true;
+    toastShownRef.current.noResults = false;
+  }
 
-    if (data && data.results.length === 0 && !toastShownRef.current.noResults) {
-      toast.error('No movies found for your request.');
-      toastShownRef.current.noResults = true;
-    }
+  if (data && data.results.length === 0 && !toastShownRef.current.noResults) {
+    toast.error('No movies found for your request.');
+    toastShownRef.current.noResults = true;
+  }
 
-    if (data && data.results.length > 0) {
-      toastShownRef.current = { noResults: false, error: false };
-    }
-  }, [isError, isLoading, data, search]);
+  if (data && data.results.length > 0) {
+    toastShownRef.current = { noResults: false, error: false };
+  }
+}, [isError, isLoading, data, search]);
 
   return (
     <div className={styles.app}>
