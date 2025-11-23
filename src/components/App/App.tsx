@@ -41,10 +41,17 @@ function App() {
   };
 
   useEffect(() => {
-    if (!isLoading && query && data && data.results.length === 0) {
-      toast.error('No movies found for your request');
+    if (!query) return;
+
+    if (isError) {
+      toast.error('Something went wrong while fetching movies.');
+      return;
     }
-  }, [isLoading, data, query]);
+
+    if (isSuccess && data?.results.length === 0) {
+      toast.error('No movies found for your request.');
+    }
+  }, [isError, isSuccess, data, query]);
 
   const movies = data?.results ?? [];
   const totalPages = data?.total_pages ?? 0;
