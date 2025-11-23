@@ -14,7 +14,7 @@ const client = axios.create({
 
 
 
-export interface TmdbSearchResponse {
+export interface MovieSearchResponse {
   page: number;
   results: Movie[];
   total_pages: number;
@@ -31,7 +31,7 @@ export async function fetchMovies({
   query,
   page = 1,
   signal,
-}: FetchMoviesParams): Promise<TmdbSearchResponse> {
+}: FetchMoviesParams): Promise<MovieSearchResponse> {
   const config = {
     params: {
       query,
@@ -45,7 +45,7 @@ export async function fetchMovies({
     signal,
   } as const;
 
-  const response = await client.get<TmdbSearchResponse>('/search/movie', config);
+  const response = await client.get<MovieSearchResponse>('/search/movie', config);
   return response.data;
 }
 
