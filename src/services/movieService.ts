@@ -12,8 +12,6 @@ const client = axios.create({
   baseURL: TMDB_BASE_URL,
 });
 
-
-
 export interface MovieSearchResponse {
   page: number;
   results: Movie[];
